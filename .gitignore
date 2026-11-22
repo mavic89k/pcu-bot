@@ -1,0 +1,30 @@
+# 터널 및 보안 파일 제외
+tunnel.bat
+
+# 카카오 업로드용 데이터 파일 제외
+*.xlsx
+*.csv
+
+# 파이썬 캐시 파일 제외
+__pycache__/
+
+# 환경파일 제외
+.venv/
+.env
+.env.*
+.envrc
+!.env.example
+
+# 문서 파일
+*.csv
+
+# 기타 파이썬 파일
+test.py
+test_db.py
+test_force_crawl.py
+test_api.py
+
+dashboard.py
+
+# DB 파일 제외
+*.json
