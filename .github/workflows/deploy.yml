@@ -18,26 +18,25 @@ jobs:
         uses: cloudtype-github-actions/deploy@v1
         with:
           token: ${{ secrets.CLOUDTYPE_TOKEN }}
-          project: ${{ vars.CLOUDTYPE_PROJECT }}
+          project: baeminhyuk0809/bot
           stage: main
           yaml: |
-            name: pcu-bot
+            name: pcu-chatbot
             app: python@3.12
             options:
+              ports: "5000"
+              start: python main.py
               install: pip install -r requirements.txt
               env:
                 - name: FIREBASE_DB_URL
-                  secret: firebase_url
-                - name: FIREBASE_SECRET
                   secret: firebase
+                - name: FIREBASE_SECRET
+                  secret: firebase_url
                 - name: NOTIFIER_TELEGRAM_TOKEN
                   secret: telegram
                 - name: CHAT_ID
                   secret: id
               buildenv: []
-              ports: "5000"
-              start: python main.py
-              strategy: rolling
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git
