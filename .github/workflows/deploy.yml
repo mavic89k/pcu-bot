@@ -29,13 +29,13 @@ jobs:
               install: pip install -r requirements.txt
               env:
                 - name: FIREBASE_DB_URL
-                  secret: firebase
+                  secret: FIREBASE_DB_URL
                 - name: FIREBASE_SECRET
-                  secret: firebase_url
+                  secret: FIREBASE_SECRET
                 - name: NOTIFIER_TELEGRAM_TOKEN
-                  secret: telegram
+                  secret: NOTIFIER_TELEGRAM_TOKEN
                 - name: CHAT_ID
-                  secret: id
+                  secret: CHAT_ID
               buildenv: []
             context:
               git:
