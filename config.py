@@ -13,8 +13,8 @@ load_dotenv(
 )
 
 # --- 버전 관리 ---
-APP_VERSION = "2.1.0"
-LAST_UPDATED = "2026-11-09"
+APP_VERSION = "4.0.0"
+LAST_UPDATED = "2026-11-23"
 
 # --- Firebase Database 설정 ---
 FIREBASE_DB_URL = os.getenv("FIREBASE_DB_URL", "").strip()

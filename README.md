@@ -240,9 +240,29 @@ Copy-Item .env.example .env
 
 Cloudtype 서비스 터미널에서 `python -m database`를 실행하면 공지 DB 읽기를 확인할 수 있습니다. HTTP 상태와 게시판 개수를 표시합니다.
 
-전체 연동은 서비스 터미널에서 `python -m diagnostics`로 확인합니다. 공지 DB 읽기, 학교 공지 조회, Firebase의 `diagnostics/<테스트 ID>` 경로에 저장 및 재조회, 기존 채팅으로 Telegram 테스트 메시지 발송을 순서대로 실행합니다.
+Cloudtype 서비스 터미널에서 진단 범위를 선택할 수 있습니다.
+
+| 명령 | 테스트 |
+| --- | --- |
+| `python -m diagnostics` | 전체 연동. 공지 DB 읽기, 학교 공지 조회, Firebase에 조회 결과 저장·재조회, Telegram 테스트 발송 |
+| `python -m diagnostics db` | 운영 공지 DB 읽기 |
+| `python -m diagnostics notices` | 학교 게시판의 최신 공지 조회 |
+| `python -m diagnostics write` | Firebase의 `diagnostics/<테스트 ID>`에 테스트 데이터 저장·재조회 |
+| `python -m diagnostics telegram` | 설정된 채팅으로 Telegram 테스트 메시지 한 건 발송 |
 
 [Cloudtype 환경변수 문서](https://docs.cloudtype.dev/ko/developers/env)
+
+### Telegram 개인 알림 설정
+
+1. Telegram에서 BotFather로 만든 봇과의 개인 채팅을 열고 **시작**을 누르거나 `/start`를 보냅니다.
+2. Cloudtype의 `main` 배포환경 시크릿에 아래 값을 등록합니다.
+
+   | Cloudtype 시크릿 | 앱 환경변수 | 입력할 값 |
+   | --- | --- | --- |
+   | `telegram` | `NOTIFIER_TELEGRAM_TOKEN` | BotFather가 발급한 봇 토큰 |
+   | `id` | `CHAT_ID` | 알림을 받을 본인의 Telegram 사용자 ID. 개인 채팅에서는 이 값이 채팅 ID입니다. |
+
+3. `pcu-chatbot`을 재배포하고, 서비스 터미널에서 `python -m diagnostics telegram`을 실행해 개인 채팅에 테스트 알림이 도착하는지 확인합니다.
 
 ### 계정 소유자가 교체할 인증정보
 
