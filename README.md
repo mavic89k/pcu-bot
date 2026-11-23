@@ -238,6 +238,8 @@ Copy-Item .env.example .env
 3. 설정 등록 후 `main`에 반영하면 Actions가 롤링 배포를 요청합니다. 대시보드에서 재배포하는 경우에도 서비스의 환경변수에 같은 시크릿을 연결하고 **배포하기**를 누릅니다.
 4. 배포 로그에서 시작이 완료됐는지 확인하고 `GET /monitoring/health`의 응답을 확인합니다.
 
+Cloudtype 서비스 터미널에서 `python -m database`를 실행하면 공지 DB 읽기를 확인할 수 있습니다. HTTP 상태와 게시판 개수를 표시합니다.
+
 [Cloudtype 환경변수 문서](https://docs.cloudtype.dev/ko/developers/env)
 
 ### 계정 소유자가 교체할 인증정보
