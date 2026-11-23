@@ -240,6 +240,8 @@ Copy-Item .env.example .env
 
 Cloudtype 서비스 터미널에서 `python -m database`를 실행하면 공지 DB 읽기를 확인할 수 있습니다. HTTP 상태와 게시판 개수를 표시합니다.
 
+전체 연동은 서비스 터미널에서 `python -m diagnostics`로 확인합니다. 공지 DB 읽기, 학교 공지 조회, Firebase의 `diagnostics/<테스트 ID>` 경로에 저장 및 재조회, 기존 채팅으로 Telegram 테스트 메시지 발송을 순서대로 실행합니다.
+
 [Cloudtype 환경변수 문서](https://docs.cloudtype.dev/ko/developers/env)
 
 ### 계정 소유자가 교체할 인증정보
