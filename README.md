@@ -1,210 +1,32 @@
-<div align="center">
+# 배재대 알리미
 
-# 🎓 배재대 알리미 (PCU Bot)
-**배재대학교 학우들을 위한 학식 식단 조회 & 교내 공지사항 실시간 알림 통합 챗봇**
+배재대학교 학식과 공지를 카카오톡에서 조회하고, 새 공지와 학식 소식을 Telegram으로 받는 비공식 챗봇입니다. 학식과 공지 검색 결과는 배재대 홈페이지에서 가져옵니다.
 
-[![KakaoTalk Channel](https://img.shields.io/badge/💬_카카오톡_채널_바로가기-배재대_알리미-FFCD00?style=for-the-badge&logo=kakaotalk&logoColor=black)](http://pf.kakao.com/_hIeGX)
+[배재대 알리미 카카오톡 채널](https://pf.kakao.com/_hIeGX)
 
-<br/>
+## 사용하기
 
-![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.138.1-009688?style=flat-square&logo=fastapi&logoColor=white)
-![APScheduler](https://img.shields.io/badge/APScheduler-3.11.2-FF6F00?style=flat-square)
-![BeautifulSoup4](https://img.shields.io/badge/BeautifulSoup4-4.15.0-4B8BBE?style=flat-square)
-![Firebase](https://img.shields.io/badge/Firebase-Realtime_DB-FFCA28?style=flat-square&logo=firebase&logoColor=black)
-![Telegram](https://img.shields.io/badge/Telegram-Bot_API-26A5E4?style=flat-square&logo=telegram&logoColor=white)
-![Cloudtype](https://img.shields.io/badge/Cloudtype-CI%2FCD-4A154B?style=flat-square)
+| 하고 싶은 일 | 카카오톡에서 |
+| --- | --- |
+| 학식 보기 | 메뉴에서 **오늘식단** 또는 **내일식단**을 누르거나 `내일 점심`, `학식 7/21`처럼 입력 |
+| 최신 공지 보기 | 일반공지, 학사공지 또는 생활관 메뉴에서 게시판을 선택하면 최신 공지 최대 4건과 원문 링크 표시 |
+| 키워드로 공지 찾기 | **공지 검색**을 누르거나 `검색`을 입력한 뒤 `장학금`처럼 키워드 입력 |
 
-</div>
+공지 검색은 **학사공지, 일반공지, 생활관 일반공지, 생활관 입퇴사공지**에서 제목을 검색하고, 각 게시판의 검색 결과 첫 페이지에서 총 최대 5건을 모아 보여줍니다. 결과 아래의 **다시 검색** 버튼으로 새 키워드를 입력할 수 있습니다.
 
----
+### Telegram 알림
 
-## 📖 프로젝트 소개 (Overview)
+| 알림 | 확인 시각 (한국 시간) | 발송 조건 |
+| --- | --- | --- |
+| 새 공지·제목 변경 | 매시 00·10·20·30·40·50분 | 이전에 저장한 공지 상태와 비교해 신규 공지나 제목 변경을 감지했을 때 |
+| 오늘 식단 | 매일 오전 10시 | 당일 식단이 등록된 평일 |
+| 다음 주 식단 등록 | 매일 오전 10시 | 다음 주 평일 메뉴가 확인되면 해당 주에 한 번 |
 
-**배재대 알리미(PCU Bot)**는 학교 홈페이지에 매번 접속해야 하는 번거로움을 줄이기 위해 개발된 **배재대학교 맞춤형 캠퍼스 라이프 챗봇 서버**입니다.
+Firebase Realtime Database의 `/notices`에는 게시판별 최신 글 번호, 고정 공지 ID, 제목과 제목 해시를 저장합니다. `/next_meal_alert`에는 발송한 주의 월요일 날짜를 저장합니다. 서버가 시작되면 다음 정해진 시각에 공지 확인이 시작됩니다.
 
-하나의 **FastAPI 비동기 서버**에서 두 가지 핵심 채널을 동시에 지원합니다:
-1. **💬 카카오톡 챗봇 (`카카오 i 오픈빌더`)**: 언제든 학식 메뉴와 최신 공지사항을 대화형으로 즉시 조회
-2. **✈️ 텔레그램 알림 봇 (`Telegram Bot API`)**: 새로운 공지사항 등록·수정 감지 알림 및 매일 오전 10시 오늘의 학식 자동 브로드캐스팅
+## 로컬 실행
 
-> 🔗 **지금 바로 사용해 보세요!**  
-> 👉 **[배재대 알리미 카카오톡 채널 추가하기](http://pf.kakao.com/_hIeGX)**
-
----
-
-## 💬 주요 동작 프리뷰 (Showcase)
-
-> 아래 메뉴와 공지 제목은 응답 형식을 보여주기 위한 예시입니다.
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### 🍱 1. 자연어 학식 조회 & 일일 브리핑
-`"오늘 학식"`, `"내일 점심"`, `"다음주 수요일"`, `"7/21"` 등 일상적인 표현을 모두 인식합니다.
-
-```text
-👤 사용자: "내일 점심 뭐 나와?"
-
-🤖 배재대 알리미:
-🌟 11/10(화요일) 배재대 학식 메뉴
-
-▪️ 중식[한식/11:00~13:30]
-백미밥
-순두부찌개
-제육볶음
-계란말이
-배추김치
-
-▪️ 중식[일품/11:00~13:30]
-등심돈까스 & 소스
-크림스프
-단무지/배추김치
-```
-
-</td>
-<td width="50%" valign="top">
-
-### 📢 2. 공지사항 신규 등록 & 수정 감지
-단순 새 글 알림뿐만 아니라, **기존 공지의 제목이 수정되었을 때 전/후 차이를 비교**하여 알려줍니다.
-
-```text
-✈️ [텔레그램 실시간 푸시 알림]
-
-🔔새 공지! [배재대 학사공지]
-
-제목: 2026학년도 2학기 기말고사 일정 안내
-링크: https://www.pcu.ac.kr/kor/article/Haksa_1/...
-
-───────────────────
-
-✏️공지 업데이트됨! [생활관 일반공지]
-
-❌ 이전: 동계방학 생활관 입사 신청 안내
-⭕ 현재: [기간연장] 동계방학 생활관 입사 신청 안내
-🔗 링크: https://www.pcu.ac.kr/article/pitel_notice/...
-```
-
-</td>
-</tr>
-</table>
-
----
-
-## ✨ 핵심 기술 및 기능 (Key Features)
-
-### 1️⃣ 지능형 학식 크롤러 & 스케줄러 (`bot_meal.py`)
-* **자연어 날짜 계산 엔진**: KST(한국 표준시)를 기준으로 상대적 날짜(`오늘`, `내일`, `모레`, `다음주 월요일`)와 절대적 날짜(`YYYY-MM-DD`, `M/D`, `M월 D일`)를 분석해 학교 식단표의 주차 오프셋(`?food=week_diff`)을 자동으로 계산합니다.
-* **데이터 노이즈 제거**:
-  * 원산지 표기 괄호, 칼로리(`kcal`) 텍스트를 정규표현식으로 깔끔하게 제거합니다.
-  * 분식 코너의 상시 중복 메뉴(라면 등) 및 운영하지 않는 코너를 필터링하여 가독성을 극대화했습니다.
-* **스마트 텔레그램 발송 (`매일 10:00 KST`)**:
-  * 주말이거나 식단표가 아직 `'준비중'` 상태일 때는 불필요한 빈 알림이 가지 않도록 **자동 스킵(Skip)** 로직이 적용되어 있습니다.
-
-### 2️⃣ SHA-256 해시 기반 공지사항 감시 엔진 (`bot_notice.py`)
-* **4대 핵심 게시판 10분 주기 감시**:
-  * `배재대 학사공지` / `배재대 일반공지` / `생활관 일반공지` / `생활관 입퇴사공지`
-* **이중 트래킹 (일반 공지 + 상단 고정 공지)**:
-  * 번호가 매겨지는 일반 게시글(`latest_regular_id`)과 상단 고정 공지(`fixed_ids`)를 분리 추적하여 누락 없는 알림을 보장합니다.
-* **SHA-256 해시 비교를 통한 수정 감지**:
-  * 조회수 변동으로 인한 오탐을 막기 위해 게시글 **제목**을 `SHA-256` 해시로 변환하여 **Firebase Realtime Database**에 저장합니다.
-  * 해시값이 바뀌면 기존 제목과 새 제목을 비교하여 수정 알림을 발송합니다.
-* **카카오톡 ListCard UI 응답**:
-  * 챗봇에서 게시판 선택 시 최신 공지 4개를 원문 바로가기 링크가 포함된 리스트카드로 반환합니다.
-
-### 3️⃣ 무중단 모니터링 & 인앱 디버깅 (`monitoring.py`)
-* **인앱 히든 디버깅 커맨드**: 서버 콘솔에 접속하지 않아도 카카오톡 채팅창에 `"디버깅"`, `"hc"`, `"헬스체크"` (또는 `"세부 디버깅"`)를 입력하면 실시간 크롤러 상태와 Firebase DB 데이터를 즉시 점검할 수 있습니다.
-* **UptimeRobot 연동**: `/`, `/monitoring/health`, `/monitoring/status` 엔드포인트를 통해 서버 가동 시간(Uptime)과 헬스 상태를 상시 모니터링합니다.
-
----
-
-## 🏗️ 시스템 아키텍처 (System Architecture)
-
-```mermaid
-flowchart TB
-    subgraph Client["📱 사용자 접점 (Channels)"]
-        KakaoUser["💬 카카오톡 사용자<br/>(pf.kakao.com/_hIeGX)"]
-        TeleUser["✈️ 텔레그램 구독 채널"]
-    end
-
-    subgraph AppServer["⚡ FastAPI Backend Server (Cloudtype)"]
-        Router["🌐 API Router (main.py)<br/>POST /meal | POST /notice | GET /monitoring/*"]
-        Scheduler["⏰ AsyncIOScheduler (KST)<br/>• 매 10분: 공지사항 감시<br/>• 매일 10시: 학식 브리핑"]
-        
-        subgraph Modules["Core Modules"]
-            MealMod["🍱 bot_meal.py<br/>자연어 날짜 파싱 & 식단 정제"]
-            NoticeMod["📢 bot_notice.py<br/>게시판 파싱 & SHA-256 해시 비교"]
-            MonitorMod["🛠️ monitoring.py<br/>인앱 디버깅 & 헬스체크"]
-        end
-    end
-
-    subgraph External["☁️ 외부 서비스 & 데이터 소스"]
-        PCU["🏫 배재대학교 홈페이지<br/>• 주간 식단표<br/>• 학사/일반/생활관 공지"]
-        Firebase[("🔥 Firebase<br/>Realtime DB<br/>(notices.json)")]
-        Uptime["📡 UptimeRobot<br/>24/7 상태 감시"]
-    end
-
-    KakaoUser -- "스킬 웹훅 요청" --> Router
-    Uptime -- "GET/HEAD 헬스체크" --> Router
-
-    Router --> MealMod
-    Router --> NoticeMod
-    Router --> MonitorMod
-
-    Scheduler --> MealMod
-    Scheduler --> NoticeMod
-
-    MealMod -- "비동기 크롤링 (HTTPX/BS4)" --> PCU
-    NoticeMod -- "비동기 크롤링 (HTTPX/BS4)" --> PCU
-    NoticeMod <-- "공지 ID / 해시 동기화" --> Firebase
-    MonitorMod -- "세부 디버깅 시 DB 조회" --> Firebase
-
-    MealMod -- "매일 10:00 학식 알림" --> TeleUser
-    NoticeMod -- "신규/수정 공지 즉시 알림" --> TeleUser
-```
-
----
-
-## 📂 디렉토리 구조 (Directory Structure)
-
-```text
-pcu_bot/
-├── .github/workflows/
-│   └── deploy.yml          # GitHub Actions -> Cloudtype 자동 배포 파이프라인
-├── main.py                 # FastAPI 애플리케이션, Lifespan 스케줄러 및 라우터 정의
-├── config.py               # 환경변수 및 타겟 게시판 URL 등 전역 설정 관리
-├── bot_meal.py             # 학식 크롤링, 자연어 날짜 분석, 텔레그램 학식 발송 모듈
-├── bot_notice.py           # 공지사항 크롤링, SHA-256 해시 생성/비교, 텔레그램 공지 발송 모듈
-├── database.py             # Firebase Realtime Database REST API 연동 모듈
-├── monitoring.py           # 서버 헬스체크 라우터 및 챗봇 인앱 디버깅 리포트 생성기
-├── utils.py                # KST(한국 표준시) 변환 및 카카오 엔티티 날짜 파싱 유틸리티
-└── requirements.txt        # 프로젝트 의존성 패키지 목록
-```
-
----
-
-## 🔌 API 명세 (API Endpoints)
-
-| Method | Endpoint | 역할 | 응답 형식 |
-| :---: | :--- | :--- | :--- |
-| `GET`/`HEAD` | `/` | 기본 서버 생존 확인 | `{"status": "OK", ...}` |
-| `GET`/`HEAD` | `/monitoring/health` | 헬스체크 및 KST 서버 시각 반환 | `{"status": "ok", "timestamp": "..."}` |
-| `GET`/`HEAD` | `/monitoring/status` | 앱 버전, 상태(`HEALTHY`), 총 가동시간(`uptime`) 반환 | JSON |
-| `POST` | `/meal` | 카카오톡 **학식 조회** 스킬 웹훅 | Kakao Skill v2.0 (`simpleText`) |
-| `POST` | `/notice` | 카카오톡 **공지사항 조회** 스킬 웹훅 | Kakao Skill v2.0 (`listCard`) |
-| `POST` | `/search` | 카카오톡 **공지 제목 검색** 스킬 웹훅 | Kakao Skill v2.0 (`listCard`, `simpleText`) |
-
----
-
-### 카카오톡 검색과 다음 주 식단 알림
-
-- `공지:도서관`은 배재대 학사·일반 공지와 생활관 일반·입퇴사 공지의 사이트 제목 검색을 실행하고, 검색 결과 첫 페이지에서 최대 5개의 원문 링크를 보여줍니다.
-- 오픈빌더에 사용자 발화가 `검색`인 전용 블록을 만들고, 검색 스킬(`POST /search`)을 연결합니다. 필수 파라미터 `search_query`에 `@sys.text`를 지정하고, 되묻기 문구는 `검색할 공지 키워드를 입력해 주세요. 예: 장학금`로 설정합니다. 직접 전달된 콜론 명령과 `/meal`·`/notice`로 들어온 검색도 처리합니다.
-- 다음 주 식단은 한국 시간 기준 매일 오전 10시에 확인합니다. 실제 메뉴가 올라오면 기존 Telegram 채팅으로 알리고, Firebase의 `next_meal_alert`에 발송한 주의 월요일 날짜를 기록합니다. 첫 배포 때 이미 다음 주 메뉴가 올라와 있으면 첫 확인 때 알림을 보냅니다. 기존 Firebase 인증정보에 이 경로의 읽기·쓰기 권한이 필요하며, 새 환경변수는 없습니다.
-
-## 🚀 Windows 로컬 실행
-
-Python 3.12를 사용합니다. PowerShell에서 저장소 루트로 이동한 뒤 실행하세요.
+Python 3.12를 기준으로 합니다. 저장소 루트에서 가상환경을 만들고 의존성을 설치합니다.
 
 ```powershell
 python -m venv .venv
@@ -212,66 +34,69 @@ python -m venv .venv
 Copy-Item .env.example .env
 ```
 
-`.env`에 아래 필수 설정을 채운 뒤 서버를 시작합니다. 이미 설정된 시스템 환경변수가 `.env`보다 우선합니다.
-서버 시작 시 누락된 필수 변수의 이름을 표시합니다.
+`.env`에 아래 값을 채우고 실행합니다. 시스템 환경변수가 함께 설정돼 있으면 시스템 값을 사용합니다. 로컬에서 운영용 인증정보로 서버를 시작하면 예약된 시각에 운영 DB와 Telegram 채팅에 접근하므로 개발 검증에는 테스트용 DB와 채팅을 사용하세요.
 
-| 환경변수 | 용도 |
+| 환경변수 | 값 |
 | --- | --- |
-| `FIREBASE_DB_URL` | 필수. Firebase Realtime Database URL |
-| `FIREBASE_SECRET` | 필수. 공지 상태를 읽고 저장하는 Firebase 인증정보 |
-| `NOTIFIER_TELEGRAM_TOKEN` | 필수. 학식·공지 알림을 보내는 Telegram 봇 토큰 |
-| `CHAT_ID` | 필수. 알림을 받는 Telegram 채팅 ID |
-| `PORT` | 선택. 직접 실행 시 기본값은 5000 |
+| `FIREBASE_DB_URL` | Firebase Realtime Database 기본 HTTPS URL |
+| `FIREBASE_SECRET` | 동일한 Realtime Database의 REST 인증에 사용하는 DB 시크릿 |
+| `NOTIFIER_TELEGRAM_TOKEN` | BotFather가 발급한 Telegram 봇 토큰 |
+| `CHAT_ID` | 알림을 받을 Telegram 채팅 ID. 봇과의 개인 채팅이라면 수신자의 Telegram 사용자 ID |
+| `PORT` | 실행 포트. 기본값은 `5000` |
 
 ```powershell
 .\.venv\Scripts\python.exe main.py
-# 또는 로컬 개발용 자동 리로드
-.\.venv\Scripts\python.exe -m uvicorn main:app --reload --port 5000
+Invoke-RestMethod http://localhost:5000/
 ```
 
-서버를 실행하면 스케줄러도 시작됩니다. 로컬 개발에는 테스트용 Firebase와 Telegram 채팅을 사용하세요.
+두 번째 명령은 서버를 실행한 상태에서 별도 PowerShell 창에 입력합니다. 실제 토큰과 인증정보는 로컬 `.env`, Cloudtype 시크릿 또는 GitHub Actions 시크릿에 저장합니다.
 
-## 🔄 Cloudtype 배포
+## Cloudtype 배포
 
-1. Cloudtype의 `main` 배포환경 시크릿 관리에 `firebase_url`(DB 주소), `firebase`(DB 인증정보), `telegram`(봇 토큰), `id`(채팅 ID)를 등록합니다.
-2. [배포 워크플로우](.github/workflows/deploy.yml)는 이 시크릿을 이름으로 참조합니다. GitHub Actions에는 배포 권한용 `CLOUDTYPE_TOKEN`과 `GHP_TOKEN`을 기존 방식대로 등록합니다. Actions 변수 `CLOUDTYPE_PROJECT`에 기존 Cloudtype 대상의 스페이스/프로젝트 경로를 등록합니다.
-3. 설정 등록 후 `main`에 반영하면 Actions가 롤링 배포를 요청합니다. 대시보드에서 재배포하는 경우에도 서비스의 환경변수에 같은 시크릿을 연결하고 **배포하기**를 누릅니다.
-4. 배포 로그에서 시작이 완료됐는지 확인하고 `GET /monitoring/health`의 응답을 확인합니다.
+[배포 워크플로](.github/workflows/deploy.yml)가 `main`에 푸시될 때 Cloudtype 배포를 요청합니다. 워크플로의 `project`에는 배포할 **스페이스/프로젝트**가 설정되어 있으며, 서비스는 `main` 배포환경의 `pcu-chatbot`입니다.
 
-Cloudtype 서비스 터미널에서 `python -m database`를 실행하면 공지 DB 읽기를 확인할 수 있습니다. HTTP 상태와 게시판 개수를 표시합니다.
+1. Cloudtype의 **배포환경 → 설정 → 시크릿 관리**에서 위 표의 필수 환경변수 네 개를 **동일한 이름으로** 등록합니다.
+2. GitHub 저장소의 **Settings → Secrets and variables → Actions**에 `CLOUDTYPE_TOKEN`(Cloudtype API 키)과 `GHP_TOKEN`(GitHub 배포용 토큰)을 등록합니다.
+3. GitHub Actions 배포 결과와 Cloudtype 실행 로그를 확인하고, 서비스 주소의 `GET /`에 응답하는지 확인합니다. [Cloudtype 환경변수](https://docs.cloudtype.dev/ko/developers/env) · [Cloudtype GitHub Actions](https://docs.cloudtype.dev/ko/developers/githubactions)
 
-Cloudtype 서비스 터미널에서 진단 범위를 선택할 수 있습니다.
+Telegram 개인 알림을 받으려면 사용할 봇과의 채팅에서 **시작**을 누르거나 `/start`를 보냅니다. `NOTIFIER_TELEGRAM_TOKEN`에는 그 봇의 토큰을, `CHAT_ID`에는 알림을 받을 본인의 사용자 ID를 지정합니다.
 
-| 명령 | 테스트 |
+### 카카오 챗봇 연결
+
+카카오 챗봇 관리자센터에서 배포한 서비스의 HTTPS 주소에 아래 경로를 붙여 등록합니다. 각 블록의 봇 응답은 **스킬데이터 사용**으로 설정합니다. [카카오 스킬 만들기](https://kakaobusiness.gitbook.io/main/tool/chatbot/skill_guide/make_skill)
+
+| 스킬 URL 경로 | 역할 |
 | --- | --- |
-| `python -m diagnostics` | 전체 연동. 공지 DB 읽기, 학교 공지 조회, Firebase에 조회 결과 저장·재조회, Telegram 테스트 발송 |
+| `POST /meal` | 날짜별 학식 조회 |
+| `POST /notice` | 게시판별 최신 공지 조회 |
+| `POST /search` | 공지 제목 검색 |
+
+**공지 검색** 블록의 사용자 발화에 `검색`을 추가합니다. 필수 파라미터 이름은 `search_query`, 엔티티는 `@sys.text`, 값은 `$search_query`를 사용합니다. 되묻기 질문을 설정하고 **봇 테스트**에서 `검색`과 `장학금`을 차례로 보낸 뒤 블록과 스킬을 배포합니다. [카카오 파라미터 설정](https://kakaobusiness.gitbook.io/main/tool/chatbot/main_notions/setting_parameter)
+
+운영 상태는 `GET /monitoring/health`에서 서버 시각과 함께, `GET /monitoring/status`에서 앱 버전과 가동 시간과 함께 확인할 수 있습니다.
+
+## 운영 진단
+
+Cloudtype 서비스 터미널에서 확인하려는 범위를 선택합니다.
+
+| 명령 | 확인할 내용 |
+| --- | --- |
 | `python -m diagnostics db` | 운영 공지 DB 읽기 |
-| `python -m diagnostics notices` | 학교 게시판의 최신 공지 조회 |
-| `python -m diagnostics write` | Firebase의 `diagnostics/<테스트 ID>`에 테스트 데이터 저장·재조회 |
-| `python -m diagnostics telegram` | 설정된 채팅으로 Telegram 테스트 메시지 한 건 발송 |
+| `python -m diagnostics notices` | 학교 게시판에서 최신 공지 조회 |
+| `python -m diagnostics write` | Firebase 테스트 데이터 저장 및 재조회 |
+| `python -m diagnostics telegram` | 설정된 Telegram 채팅에 테스트 메시지 한 건 발송 |
+| `python -m diagnostics` | DB 읽기 → 학교 공지 조회 → 조회 결과 저장 및 재조회 → Telegram 테스트 발송 |
 
-[Cloudtype 환경변수 문서](https://docs.cloudtype.dev/ko/developers/env)
+쓰기 테스트는 Firebase의 `/diagnostics/<테스트 ID>`에 기록을 남깁니다. DB 오류는 `db`, Telegram 오류는 `telegram`부터 실행하면 해당 연결만 확인할 수 있습니다. 학교 사이트에 대한 HTTP 요청은 Cloudtype 실행 로그에서 경로, 응답 시간, HTTP 상태를 확인할 수 있습니다.
 
-### Telegram 개인 알림 설정
+## 소스 구조
 
-1. Telegram에서 BotFather로 만든 봇과의 개인 채팅을 열고 **시작**을 누르거나 `/start`를 보냅니다.
-2. Cloudtype의 `main` 배포환경 시크릿에 아래 값을 등록합니다.
-
-   | Cloudtype 시크릿 | 앱 환경변수 | 입력할 값 |
-   | --- | --- | --- |
-   | `telegram` | `NOTIFIER_TELEGRAM_TOKEN` | BotFather가 발급한 봇 토큰 |
-   | `id` | `CHAT_ID` | 알림을 받을 본인의 Telegram 사용자 ID. 개인 채팅에서는 이 값이 채팅 ID입니다. |
-
-3. `pcu-chatbot`을 재배포하고, 서비스 터미널에서 `python -m diagnostics telegram`을 실행해 개인 채팅에 테스트 알림이 도착하는지 확인합니다.
-
-### 계정 소유자가 교체할 인증정보
-
-| 설정 이름 | 작업 |
+| 파일 | 역할 |
 | --- | --- |
-| `FIREBASE_SECRET` | Firebase에서 기록에 남은 DB 인증정보의 폐기와 교체를 진행하고 새 값을 등록합니다. 기존 방식으로 교체 가능한 자격 증명이 없다면 인증 방식 마이그레이션이 필요합니다. |
-| `NOTIFIER_TELEGRAM_TOKEN` | BotFather에서 기존 토큰을 폐기하고 새 토큰을 등록합니다. |
-| `NOTICE_TELEGRAM_TOKEN`, `CABANA_TELEGRAM_TOKEN` | 과거에 사용한 봇 토큰을 BotFather에서 폐기합니다. 해당 봇을 운영 중이면 새 토큰으로 교체합니다. |
-| `UPTIMEROBOT_API_KEY` | UptimeRobot에서 기록에 남은 키를 폐기하고 사용하는 곳에만 새 키를 등록합니다. |
-| `CLOUDTYPE_TOKEN`, `GHP_TOKEN` | Actions에 보관하는 배포용 시크릿입니다. 저장소에서는 이름만 확인됐으며 별도 노출이 확인된 경우 교체합니다. |
-
-`CHAT_ID`는 채팅 식별자입니다. 인증정보를 교체한 뒤에도 과거 Git 기록에 남은 토큰과 비공개 식별자는 별도 정리가 필요합니다.
+| [main.py](main.py) | FastAPI 라우팅, 카카오 응답, 스케줄 등록 |
+| [bot_meal.py](bot_meal.py) | 식단 조회, 오늘 식단 및 다음 주 식단 알림 |
+| [bot_notice.py](bot_notice.py) | 게시판 조회, 제목 검색, 공지 변경 감지 |
+| [database.py](database.py) | Firebase REST 읽기·쓰기와 공지 DB 진단 |
+| [diagnostics.py](diagnostics.py) | 학교·Firebase·Telegram 연동 테스트 |
+| [monitoring.py](monitoring.py) | 헬스체크와 상태 응답 |
+| [config.py](config.py), [utils.py](utils.py) | 환경변수, 게시판 설정, HTTP 요청과 공통 함수 |
