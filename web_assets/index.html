@@ -6,14 +6,19 @@
   <meta name="theme-color" content="#162d23">
   <meta name="description" content="배재대학교 오늘과 다음 주 학식, 최신 공지와 공지 제목 검색">
   <title>배재대 알리미</title>
-  <link rel="stylesheet" href="/web/app.css?v=4.5.1">
-  <script src="/web/app.js?v=4.5.1" defer></script>
+  <link rel="icon" type="image/png" sizes="48x48" href="data:image/png;base64,{{FAVICON}}">
+  <link rel="stylesheet" href="/web/app.css?v={{APP_VERSION}}">
+  <script src="/web/app.js?v={{APP_VERSION}}" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">본문으로 이동</a>
   <header class="masthead">
     <div class="shell navigation">
-      <a class="brand" href="/web"><span class="brand-mark" aria-hidden="true">P</span> 배재대 알리미</a>
+      <a class="brand" href="/web">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <span>배재대 알리미</span>
+        <span class="brand-version">v{{APP_VERSION}}</span>
+      </a>
       <a class="channel" href="https://pf.kakao.com/_hIeGX">카카오톡 <span aria-hidden="true">↗</span></a>
     </div>
   </header>

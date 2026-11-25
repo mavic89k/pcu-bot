@@ -13,7 +13,7 @@ load_dotenv(
 )
 
 # --- 버전 관리 ---
-APP_VERSION = "4.5.2"
+APP_VERSION = "4.5.3"
 LAST_UPDATED = "2026-11-25"
 
 # --- Firebase Database 설정 ---

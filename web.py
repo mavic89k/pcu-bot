@@ -1,22 +1,30 @@
 import asyncio
+from base64 import b64encode
 from datetime import timedelta
+from html import escape
 from pathlib import Path
 from time import monotonic
 from typing import Literal
 
 import httpx
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from pydantic import BaseModel, Field
 
 from bot_meal import fetch_week_menus
 from bot_notice import fetch_notices, search_notices
-from config import TARGET_SITES
+from config import APP_VERSION, TARGET_SITES
 from utils import get_kst_now
 
 
 router = APIRouter(prefix="/web", include_in_schema=False)
 ASSETS = Path(__file__).resolve().with_name("web_assets")
+FAVICON = b64encode((ASSETS / "favicon.png").read_bytes()).decode("ascii")
+PAGE_HTML = (
+    (ASSETS / "index.html").read_text(encoding="utf-8")
+    .replace("{{APP_VERSION}}", escape(APP_VERSION))
+    .replace("{{FAVICON}}", FAVICON)
+)
 BOARD_LABELS = {
     "haksa": "학사",
     "general": "일반",
@@ -37,16 +45,15 @@ class SearchQuery(BaseModel):
 
 @router.get("")
 def page():
-    return FileResponse(
-        ASSETS / "index.html",
-        media_type="text/html",
+    return HTMLResponse(
+        PAGE_HTML,
         headers={
             "Cache-Control": "no-cache",
             "X-Content-Type-Options": "nosniff",
             "Referrer-Policy": "same-origin",
             "Content-Security-Policy": (
                 "default-src 'none'; script-src 'self'; style-src 'self'; "
-                "connect-src 'self'; img-src 'self'; base-uri 'none'; "
+                "connect-src 'self'; img-src 'self' data:; base-uri 'none'; "
                 "form-action 'none'; frame-ancestors 'none'"
             ),
         },

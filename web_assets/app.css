@@ -35,6 +35,7 @@ button { cursor: pointer; }
 .navigation { min-height: 64px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .brand { display: flex; align-items: center; gap: 11px; font-size: 18px; font-weight: 800; letter-spacing: -.06em; white-space: nowrap; }
 .brand-mark { background: var(--moss); color: var(--lime); width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px; font: 700 23px/1 Georgia, serif; }
+.brand-version { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: 0; font-variant-numeric: tabular-nums; }
 .channel, .footer a:hover { text-underline-offset: 4px; }
 .channel { display: inline-flex; min-height: 44px; align-items: center; gap: 4px; color: var(--green); font-size: 14px; font-weight: 700; white-space: nowrap; }
 .channel:hover, .footer a:hover { text-decoration: underline; }
