@@ -13,6 +13,7 @@ from utils import normalize_search_text
 from bot_meal import get_pcu_diet, job_check_next_week_meal, send_daily_meal_telegram
 from bot_notice import fetch_notices, job_check_new_notices, search_notices
 from monitoring import router as monitoring_router, generate_debug_report
+from web import router as web_router
 
 # =============================================================================
 # --- 백그라운드 스케줄러 세팅 ---
@@ -52,6 +53,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(monitoring_router)
+app.include_router(web_router)
 
 # =============================================================================
 # --- 헬스체크 라우터 ---
