@@ -9,15 +9,14 @@ const dayLabel = new Intl.DateTimeFormat("ko-KR", {
 });
 
 const weekButtons = Array.from(document.querySelectorAll("[data-week]"));
+const mealTitle = document.querySelector("#meals-title");
 const mealPeriod = document.querySelector("#meal-period");
 const mealDays = document.querySelector("#meal-days");
 const mealContent = document.querySelector("#meal-content");
-const todayPreview = document.querySelector("#today-preview");
 const boardTabs = document.querySelector("#board-tabs");
 const noticeResults = document.querySelector("#notice-results");
 const searchForm = document.querySelector("#notice-form");
 const searchInput = document.querySelector("#notice-query");
-const sectionLinks = document.querySelectorAll("[data-section-link]");
 let mealRequest = 0;
 let boardRequest = 0;
 let boards = [];
@@ -51,16 +50,6 @@ function setSelected(buttons, active) {
   for (const control of buttons) control.setAttribute("aria-pressed", String(control === active));
 }
 
-function updateSectionLinks() {
-  for (const link of sectionLinks) {
-    if (link.hash === location.hash) {
-      link.setAttribute("aria-current", "location");
-    } else {
-      link.removeAttribute("aria-current");
-    }
-  }
-}
-
 function asDate(value) {
   return new Date(value + "T00:00:00Z");
 }
@@ -71,29 +60,22 @@ async function request(path, options) {
   return response.json();
 }
 
-function renderToday(data) {
-  const today = data.days.find((day) => day.date === data.today);
-  const lunch = today?.menus.find((entry) => entry.corner.startsWith("중식"));
-  const meal = lunch || today?.menus[0];
-  if (!meal) {
-    todayPreview.replaceChildren(node("p", "등록된 오늘 식단이 없어요.", "today-message"));
-    return;
-  }
-  todayPreview.replaceChildren(
-    node("p", meal.corner.replace("[", " · ").replace(/\/.*$/, ""), "today-title"),
-    node("p", meal.items.slice(0, 3).join(" · "), "today-menu"),
-  );
-}
-
-function renderDay(day) {
-  if (!day?.menus.length) {
+function renderDay(day, today) {
+  const isToday = day.date === today;
+  mealTitle.textContent = isToday ? "오늘의 학식" : "학식";
+  mealPeriod.textContent = dateLabel.format(asDate(day.date)) + " · 한국 시간 기준";
+  if (!day.menus.length) {
     mealContent.replaceChildren(empty("이 날짜에 등록된 식단이 없어요."));
     return;
   }
   const list = node("ul", null, "meal-items");
   for (const meal of day.menus) {
     const row = node("li", null, "meal-item");
-    row.append(node("h3", meal.corner), node("p", meal.items.join(" · ")));
+    const [category, kind, time] = meal.corner.split(/[\[/\]]/);
+    const heading = node("div", null, "meal-heading");
+    heading.append(node("h3", kind ? category + " · " + kind : category));
+    if (time) heading.append(node("small", time, "meal-time"));
+    row.append(heading, node("p", meal.items.join(" · ")));
     list.append(row);
   }
   mealContent.replaceChildren(list);
@@ -101,32 +83,29 @@ function renderDay(day) {
 
 async function loadMeals(week) {
   const generation = ++mealRequest;
+  mealTitle.textContent = week === "current" ? "오늘의 학식" : "학식";
   setSelected(weekButtons, weekButtons.find((control) => control.dataset.week === week));
   mealDays.replaceChildren();
-  mealPeriod.textContent = "평일 식단 · 한국 시간 기준";
+  mealPeriod.textContent = "한국 시간 기준";
   mealContent.replaceChildren(empty("학교 홈페이지에서 식단을 불러오는 중입니다."));
   try {
     const data = await request("/web/meals?week=" + week);
-    if (week === "current") renderToday(data);
     if (generation !== mealRequest) return;
     const buttons = data.days.map((day) => {
       const date = asDate(day.date);
       const control = button(dayLabel.format(date), () => {
         setSelected(buttons, control);
-        renderDay(day);
+        renderDay(day, data.today);
       });
       control.append(node("small", shortDate.format(date)));
       control.setAttribute("aria-label", dateLabel.format(date));
       return control;
     });
     mealDays.replaceChildren(...buttons);
-    const initial = Math.max(0, data.days.findIndex((day) => day.date === data.today));
+    const initial = week === "next" ? 0 : data.days.findIndex((day) => day.date === data.today);
     setSelected(buttons, buttons[initial]);
-    renderDay(data.days[initial]);
+    renderDay(data.days[initial] ?? {date: data.today, menus: []}, data.today);
   } catch {
-    if (week === "current") {
-      todayPreview.replaceChildren(node("p", "오늘 식단을 불러오지 못했어요.", "today-message"));
-    }
     if (generation === mealRequest) {
       mealContent.replaceChildren(empty("학교 식단을 불러오지 못했어요.", () => loadMeals(week)));
     }
@@ -224,9 +203,6 @@ async function runSearch(keyword) {
   }
 }
 
-document.querySelector("#hero-date").textContent = dateLabel.format(new Date());
-window.addEventListener("hashchange", updateSectionLinks);
-updateSectionLinks();
 for (const control of weekButtons) control.addEventListener("click", () => loadMeals(control.dataset.week));
 searchForm.addEventListener("submit", (event) => {
   event.preventDefault();

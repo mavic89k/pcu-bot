@@ -6,48 +6,28 @@
   <meta name="theme-color" content="#162d23">
   <meta name="description" content="배재대학교 오늘과 다음 주 학식, 최신 공지와 공지 제목 검색">
   <title>배재대 알리미</title>
-  <link rel="stylesheet" href="/web/app.css?v=2">
-  <script src="/web/app.js?v=2" defer></script>
+  <link rel="stylesheet" href="/web/app.css?v=4.5.1">
+  <script src="/web/app.js?v=4.5.1" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">본문으로 이동</a>
   <header class="masthead">
     <div class="shell navigation">
       <a class="brand" href="/web"><span class="brand-mark" aria-hidden="true">P</span> 배재대 알리미</a>
-      <nav aria-label="주 메뉴">
-        <a href="#meals" data-section-link>학식</a>
-        <a href="#notices" data-section-link>공지</a>
-        <a class="channel" href="https://pf.kakao.com/_hIeGX">카카오톡 <span aria-hidden="true">↗</span></a>
-      </nav>
+      <a class="channel" href="https://pf.kakao.com/_hIeGX">카카오톡 <span aria-hidden="true">↗</span></a>
     </div>
   </header>
   <main id="main" class="shell">
-    <section class="hero" aria-labelledby="intro">
-      <div class="hero-copy">
-        <p class="hero-date" id="hero-date"></p>
-        <h1 id="intro">오늘의 학식과<br>새로운 공지</h1>
-        <p class="hero-description">배재대학교 식단을 확인하고<br class="mobile-break"> 필요한 공지를 찾아보세요.</p>
-        <a class="hero-link" href="#meals">학식 확인하기 <span aria-hidden="true">↓</span></a>
-      </div>
-      <div class="today-card">
-        <p class="today-label"><span aria-hidden="true"></span> 오늘의 학식</p>
-        <div id="today-preview" aria-live="polite">
-          <p class="today-message">오늘 식단을 확인하고 있습니다.</p>
-        </div>
-        <a href="#meals">전체 식단 보기 <span aria-hidden="true">↗</span></a>
-      </div>
-    </section>
-
     <div class="sections">
       <section id="meals" class="panel" tabindex="-1" aria-labelledby="meals-title">
         <div class="panel-heading">
-          <h2 id="meals-title">학식</h2>
+          <h1 id="meals-title">오늘의 학식</h1>
           <div class="week-tabs" role="group" aria-label="조회할 주">
             <button type="button" data-week="current" aria-pressed="true">이번 주</button>
             <button type="button" data-week="next" aria-pressed="false">다음 주</button>
           </div>
         </div>
-        <p id="meal-period" class="panel-subtitle">평일 식단 · 한국 시간 기준</p>
+        <p id="meal-period" class="panel-subtitle" aria-live="polite">한국 시간 기준</p>
         <div class="meal-days" id="meal-days" role="group" aria-label="조회할 날짜"></div>
         <div class="meal-content" id="meal-content" aria-live="polite">
           <p class="empty">학교 홈페이지에서 식단을 불러오는 중입니다.</p>
