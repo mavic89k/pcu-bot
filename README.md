@@ -2,7 +2,7 @@
 
 배재대학교 학식과 공지를 카카오톡에서 조회하고, 새 공지와 학식 소식을 Telegram으로 받는 비공식 챗봇입니다. 학식과 공지 검색 결과는 배재대 홈페이지에서 가져옵니다.
 
-[배재대 알리미 카카오톡 채널](https://pf.kakao.com/_hIeGX)
+[배재대 알리미 카카오톡 채널](https://pf.kakao.com/_hIeGX) · [서비스 상태 페이지 (UptimeRobot)](https://stats.uptimerobot.com/aoBQJ1uTFV)
 
 ## 사용하기
 
