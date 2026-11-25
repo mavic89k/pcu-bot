@@ -29,7 +29,7 @@ async def fetch_notices(site_url: str, limit: int = 10, *, keyword: str | None =
             "searchKeyword": keyword,
         })
 
-    operation = "notice_search" if keyword is not None else "notice_list"
+    operation = "학교 공지 검색" if keyword is not None else "학교 공지 조회"
     response = await fetch_school_page(url, operation=operation, timeout=10.0, follow_redirects=True)
     response.encoding = 'utf-8'
     soup = BeautifulSoup(response.text, "html.parser")
@@ -83,7 +83,7 @@ async def search_notices(keyword: str) -> tuple[list[dict], bool, bool]:
     async def search_board(site: dict) -> list:
         async with asyncio.timeout(3.0):
             entries = await fetch_notices(site["url"], limit=30, keyword=keyword)
-        logger.info("School notice search results board=%s rows=%d", site["id"], len(entries))
+        logger.info("학교 공지 검색 결과 | 게시판 %s | %d건", site["name"], len(entries))
         return entries
 
     sites = config.TARGET_SITES

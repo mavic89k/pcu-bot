@@ -84,7 +84,7 @@ def meal_week_url(offset: int) -> str:
 
 
 async def fetch_meal_tables(url: str):
-    response = await fetch_school_page(url, operation="meal", timeout=5.0)
+    response = await fetch_school_page(url, operation="학교 식단 조회", timeout=5.0)
     return BeautifulSoup(response.text, "html.parser").find_all("table")
 
 

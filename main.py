@@ -4,9 +4,11 @@ import logging
 import os
 import uvicorn
 from contextlib import asynccontextmanager
+from copy import deepcopy
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from uvicorn.config import LOGGING_CONFIG
 
 import config as config
 from utils import normalize_search_text
@@ -185,4 +187,10 @@ async def chatbot_notice(payload: dict):
 # (참고) 입금 확인 기능(/webhook/sms, /deposit)도 완전히 필요 없으시다면 삭제하셔도 무방합니다.
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    log_config = deepcopy(LOGGING_CONFIG)
+    log_config["formatters"]["access"]["fmt"] = (
+        '%(levelprefix)s 요청 "%(request_line)s" | 응답 %(status_code)s | 접속 %(client_addr)s'
+    )
+    uvicorn.run(
+        "main:app", host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), log_config=log_config,
+    )

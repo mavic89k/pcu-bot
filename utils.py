@@ -78,15 +78,16 @@ async def fetch_school_page(
         response.raise_for_status()
     except (httpx.HTTPError, asyncio.CancelledError) as exc:
         status = exc.response.status_code if isinstance(exc, httpx.HTTPStatusError) else "-"
+        error = "응답 시간 초과" if isinstance(exc, httpx.TimeoutException) else type(exc).__name__
         logger.warning(
-            "School request failed operation=%s path=%s elapsed_ms=%.0f error=%s status=%s",
-            operation, url.path, (perf_counter() - started) * 1000, type(exc).__name__, status,
+            "%s 실패 | 경로 %s | 응답 %s | 소요 %.0fms | 오류 %s",
+            operation, url.path, status, (perf_counter() - started) * 1000, error,
         )
         raise
 
     logger.info(
-        "School request completed operation=%s path=%s elapsed_ms=%.0f status=%d",
-        operation, url.path, (perf_counter() - started) * 1000, response.status_code,
+        "%s 완료 | 경로 %s | 응답 %d | 소요 %.0fms",
+        operation, url.path, response.status_code, (perf_counter() - started) * 1000,
     )
     return response
 
