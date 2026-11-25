@@ -89,7 +89,18 @@ async def fetch_meal_tables(url: str):
 
 
 def clean_meal_cell(raw_menu: str) -> str:
-    cleaned = re.sub(r"\(.*?\)", "", raw_menu.replace("\r", "\n"))
+    def strip_annotations(line: str) -> str:
+        is_ramen = "신라면" in line
+
+        def keep_topping(match: re.Match[str]) -> str:
+            annotation = match[1]
+            if is_ramen and ":" not in annotation and re.search(r"[가-힣]", annotation):
+                return match[0]
+            return ""
+
+        return re.sub(r"\(([^()]*)\)", keep_topping, line)
+
+    cleaned = "\n".join(strip_annotations(line) for line in raw_menu.splitlines())
     cleaned = re.sub(r"\d+\.?\d*\s*kcal", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"[ \t]+", " ", cleaned)
     return "\n".join(line.strip() for line in cleaned.splitlines() if line.strip())
