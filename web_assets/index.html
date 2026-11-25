@@ -15,8 +15,8 @@
     <div class="shell navigation">
       <a class="brand" href="/web"><span class="brand-mark" aria-hidden="true">P</span> 배재대 알리미</a>
       <nav aria-label="주 메뉴">
-        <a href="#meals">학식</a>
-        <a href="#notices">공지</a>
+        <a href="#meals" data-section-link>학식</a>
+        <a href="#notices" data-section-link>공지</a>
         <a class="channel" href="https://pf.kakao.com/_hIeGX">카카오톡 <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
@@ -39,7 +39,7 @@
     </section>
 
     <div class="sections">
-      <section id="meals" class="panel" aria-labelledby="meals-title">
+      <section id="meals" class="panel" tabindex="-1" aria-labelledby="meals-title">
         <div class="panel-heading">
           <h2 id="meals-title">학식</h2>
           <div class="week-tabs" role="group" aria-label="조회할 주">
@@ -54,7 +54,7 @@
         </div>
       </section>
 
-      <section id="notices" class="panel" aria-labelledby="notices-title">
+      <section id="notices" class="panel" tabindex="-1" aria-labelledby="notices-title">
         <div class="panel-heading"><h2 id="notices-title">학교 공지</h2></div>
         <p class="panel-subtitle">학사 · 일반 · 생활관</p>
         <form id="notice-form" class="search-form" role="search">

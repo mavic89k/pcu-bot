@@ -17,6 +17,7 @@ const boardTabs = document.querySelector("#board-tabs");
 const noticeResults = document.querySelector("#notice-results");
 const searchForm = document.querySelector("#notice-form");
 const searchInput = document.querySelector("#notice-query");
+const sectionLinks = document.querySelectorAll("[data-section-link]");
 let mealRequest = 0;
 let boardRequest = 0;
 let boards = [];
@@ -48,6 +49,16 @@ function empty(text, retry) {
 
 function setSelected(buttons, active) {
   for (const control of buttons) control.setAttribute("aria-pressed", String(control === active));
+}
+
+function updateSectionLinks() {
+  for (const link of sectionLinks) {
+    if (link.hash === location.hash) {
+      link.setAttribute("aria-current", "location");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  }
 }
 
 function asDate(value) {
@@ -214,6 +225,8 @@ async function runSearch(keyword) {
 }
 
 document.querySelector("#hero-date").textContent = dateLabel.format(new Date());
+window.addEventListener("hashchange", updateSectionLinks);
+updateSectionLinks();
 for (const control of weekButtons) control.addEventListener("click", () => loadMeals(control.dataset.week));
 searchForm.addEventListener("submit", (event) => {
   event.preventDefault();
